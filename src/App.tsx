@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import SearchBar from "./components/SearchBar";
+import Dropdown from "./components/Dropdown";
+import HighlightCheckbox from "./components/HighlightCheckbox";
 import ClientTable from "./components/ClientTable";
 
 type Client = {
@@ -16,18 +18,45 @@ const App: React.FC = () => {
     { name: "Stan Still", city: "Dallas", birthday: "1952-10-31" },
     { name: "Terry Aki", city: "Columbus", birthday: "1960-01-03" },
   ]);
-  
+  const [filteredClients, setFilteredClients] = useState<Client[]>(clients);
+  const [highlightOldest, setHighlightOldest] = useState<boolean>(false);
 
-  
-  
+  const handleSearch = (searchTerm: string) => {
+    setFilteredClients(
+      clients.filter((client) =>
+        client.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  };
+
+  const handleCityFilter = (city: string | null) => {
+    setFilteredClients(
+      city ? clients.filter((client) => client.city === city) : clients
+    );
+  };
+
   return (
     <div>
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        
-        
-        
+        <SearchBar onSearch={handleSearch} />
+        <Dropdown
+          options={[
+            { value: "New York", label: "New York" },
+            { value: "Jacksonville", label: "Jacksonville" },
+            { value: "Washington", label: "Washington" },
+            { value: "Dallas", label: "Dallas" },
+            { value: "Columbus", label: "Columbus" },
+          ]}
+          onChange={handleCityFilter}
+        />
+        <HighlightCheckbox
+          onChange={setHighlightOldest}
+        />
       </div>
-      
+      <ClientTable
+        clients={filteredClients}
+        highlightOldest={highlightOldest}
+      />
     </div>
   );
 };
